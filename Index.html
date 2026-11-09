@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#082b60">
+<title>Railway Seat Finder AI</title>
+
+<style>
+:root {
+  --navy:#082b60;
+  --blue:#0866e9;
+  --light:#f2f6ff;
+  --white:#ffffff;
+  --text:#14294a;
+  --muted:#70809b;
+  --green:#079b58;
+  --border:#dce6f7;
+  --card:#ffffff;
+}
+.dark {
+  --navy:#07172f;
+  --light:#101d32;
+  --white:#172944;
+  --text:#edf4ff;
+  --muted:#a4b5cf;
+  --border:#2b405f;
+  --card:#172944;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--light);
+  color:var(--text);
+}
+header {
+  background:linear-gradient(110deg,#061d43,#0753a9);
+  color:white;
+  padding:17px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+.brand {font-size:22px;font-weight:800}
+.brand small {display:block;font-size:11px;margin-top:5px;color:#c6ddff}
+nav {display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+nav a {color:white;text-decoration:none;font-size:14px}
+button {cursor:pointer;font-weight:700;border:0}
+.theme {
+  background:#ffffff20;color:white;
+  border:1px solid #ffffff55;
+  padding:10px 14px;border-radius:20px;
+}
+.hero {
+  color:white;
+  padding:48px 6% 75px;
+  background:linear-gradient(110deg,#092a59,#0969c5);
+}
+.hero h1 {font-size:clamp(27px,5vw,45px);margin:0 0 12px}
+.hero h1 span {color:#ffca45}
+.hero p {line-height:1.6;color:#e1edff;max-width:600px}
+.tags {display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.tag {background:#ffffff20;padding:10px 14px;border-radius:25px;font-size:13px}
+main {width:min(1200px,94%);margin:-48px auto 50px;position:relative}
+.panel {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 12px 35px #102e6018;
+}
+.tabs {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.tab {
+  padding:12px 18px;border-radius:25px;
+  background:var(--light);color:var(--text);
+}
+.tab.active {background:var(--blue);color:white}
+.fields {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:12px;
+}
+.field {min-width:0}
+.field label {display:block;font-size:13px;font-weight:700;margin-bottom:8px}
+input,select {
+  width:100%;padding:13px 10px;
+  border:1px solid var(--border);
+  border-radius:11px;background:var(--light);
+  color:var(--text);font-size:14px;min-width:0;
+}
+.search {
+  width:100%;margin-top:17px;padding:16px;
+  background:linear-gradient(90deg,#0754d5,#0879ed);
+  color:white;border-radius:12px;font-size:17px;
+}
+.notice {
+  background:#fff8df;color:#765400;
+  border:1px solid #f4df9c;border-radius:10px;
+  padding:12px;margin-top:15px;font-size:12px;
+}
+.section-title {font-size:22px;margin:30px 0 15px}
+.results {display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.result {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:17px;
+}
+.result h3 {margin:0 0 12px;font-size:17px}
+.result p {font-size:13px;line-height:1.6;color:var(--muted)}
+.status {
+  display:inline-block;padding:7px 10px;
+  background:#e0f8eb;color:#087743;
+  border-radius:20px;font-size:12px;font-weight:700;
+}
+.blue-status {background:#e2efff;color:#0755b4}
+.result button {
+  margin-top:12px;padding:11px;width:100%;
+  background:var(--blue);color:white;border-radius:9px;
+}
+.route {font-weight:700;color:var(--blue);font-size:14px}
+.hidden {display:none}
+.ai {
+  margin-top:25px;background:var(--card);
+  border:1px solid var(--border);border-radius:16px;padding:20px;
+}
+.ai input {margin-top:10px}
+footer {
+  text-align:center;padding:25px;color:var(--muted);
+  font-size:12px;
+}
+@media(max-width:850px) {
+  .fields {grid-template-columns:repeat(2,1fr)}
+  .results {grid-template-columns:1fr}
+}
+@media(max-width:480px) {
+  header {padding:15px}
+  nav {gap:12px}
+  nav a {font-size:12px}
+  .hero {padding:35px 5% 70px}
+  .panel {padding:15px}
+  .fields {grid-template-columns:1fr 1fr}
+  .field:first-child,.field:nth-child(2) {grid-column:span 1}
+  .tab {font-size:12px;padding:10px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">🚆 Railway Seat Finder AI
+    <small>Smart Search · Smart Options · Smart Travel</small>
+  </div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#results">Results</a>
+    <a href="#assistant">AI Assistant</a>
+    <button class="theme" onclick="toggleTheme()">🌙</button>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <h1>Find Your Train Journey<br>
+    <span>with AI Intelligence</span>
+  </h1>
+  <p>No seats? No problem! Discover earlier stations,
+  alternative trains and smarter connecting routes.</p>
+  <div class="tags">
+    <span class="tag">✓ Smart Search</span>
+    <span class="tag">⚡ Alternative Routes</span>
+    <span class="tag">🤖 AI Assistant</span>
+    <span class="tag">🛡️ Secure Search</span>
+  </div>
+</section>
+
+<main>
+  <section class="panel">
+    <div class="tabs">
+      <button class="tab active">🚆 Train Search</button>
+      <button class="tab" onclick="showAI()">🤖 AI Assistant</button>
+      <button class="tab" onclick="goResults()">📍 Route Planner</button>
+      <button class="tab" onclick="goResults()">💺 Seat Finder</button>
+    </div>
+
+    <form id="searchForm">
+      <div class="fields">
+        <div class="field">
+          <label>From Station</label>
+          <input id="from" placeholder="e.g. NJP" required>
+        </div>
+        <div class="field">
+          <label>To Station</label>
+          <input id="to" placeholder="e.g. Sealdah" required>
+        </div>
+        <div class="field">
+          <label>Journey Date</label>
+          <input id="date" type="date" required>
+        </div>
+        <div class="field">
+          <label>Class</label>
+          <select id="class">
+            <option>SL</option><option selected>3A</option>
+            <option>2A</option><option>1A</option>
+            <option>CC</option><option>2S</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Quota</label>
+          <select id="quota">
+            <option>General</option><option>Tatkal</option>
+            <option>Premium Tatkal</option><option>Ladies</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Passengers</label>
+          <select id="passengers">
+            <option>1</option><option>2</option>
+            <option>3</option><option>4</option>
+            <option>5</option><option>6</option>
+          </select>
+        </div>
+      </div>
+      <button class="search" type="submit">🔍 Search Trains</button>
+    </form>
+    <div class="notice">
+      DEMO MODE: Results are sample data, not live railway availability.
+      Live data requires an authorized railway API.
+    </div>
+  </section>
+
+  <section id="results">
+    <h2 class="section-title">✨ Smart Search Solutions</h2>
+    <div class="results">
+      <article class="result">
+        <h3>🟢 Same Train – Earlier Station</h3>
+        <div class="status">Smart Segment Search</div>
+        <p id="sameRoute">Requested journey: —</p>
+        <p>AI checks earlier stations on the same train
+        and verifies the longer ticket segment.</p>
+        <button onclick="demoMessage()">Check Earlier Stations</button>
+      </article>
+
+      <article class="result">
+        <h3>🚆 Alternative Trains</h3>
+        <div class="status blue-status">Other Train Options</div>
+        <p>Find other trains, classes and departure
+        times for your journey.</p>
+        <button onclick="demoMessage()">Explore Other Trains</button>
+      </article>
+
+      <article class="result">
+        <h3>🗺️ Connecting Routes</h3>
+        <div class="status blue-status">Route Planner</div>
+        <p>Discover possible connecting stations,
+        transfer time and separate ticket requirements.</p>
+        <button onclick="demoMessage()">Find Connecting Routes</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="ai hidden" id="assistant">
+    <h2>🤖 AI Railway Assistant</h2>
+    <p>Ask about your train journey in natural language.</p>
+    <input id="question" placeholder="e.g. Find another train from NJP to Sealdah">
+    <button class="search" onclick="askDemo()">Ask AI Assistant</button>
+    <p id="answer"></p>
+    <div class="notice">AI connection will be enabled after backend setup.</div>
+  </section>
+</main>
+
+<footer>
+  Railway Seat Finder AI · Smart Search · Smart Travel<br>
+  Independent project. Not an official IRCTC website.
+</footer>
+
+<script>
+const dateInput = document.getElementById("date");
+const today = new Date();
+dateInput.min = new Date(today.getTime()-today.getTimezoneOffset()*60000)
+  .toISOString().split("T")[0];
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
+
+document.getElementById("searchForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const from = document.getElementById("from").value.trim();
+  const to = document.getElementById("to").value.trim();
+  const date = dateInput.value;
+  document.getElementById("sameRoute").textContent =
+    "Requested journey: " + from + " → " + to + " | " + date;
+  document.getElementById("results").scrollIntoView({behavior:"smooth"});
+  alert("Search form received. Live train search will be connected in the next development step.");
+});
+
+function demoMessage() {
+  alert("This feature will be connected to the railway search engine in the next step. No live availability is being claimed.");
+}
+function goResults() {
+  document.getElementById("results").scrollIntoView({behavior:"smooth"});
+}
+function showAI() {
+  document.getElementById("assistant").classList.remove("hidden");
+  document.getElementById("assistant").scrollIntoView({behavior:"smooth"});
+}
+function askDemo() {
+  const q = document.getElementById("question").value.trim();
+  document.getElementById("answer").textContent = q
+    ? "Your question is ready. Claude AI will be connected through the secure backend in the next step."
+    : "Please enter your question.";
+}
+</script>
+</body>
+</html>
